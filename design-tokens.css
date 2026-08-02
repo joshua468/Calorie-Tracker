@@ -1,0 +1,29 @@
+:root {
+  --colors-roles-primary: #22C55E;
+  --colors-roles-secondary: #16A34A;
+  --colors-roles-tertiary: #15803D;
+  --effect-soft-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  --effect-medium-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --effect-hard-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --spacing-extra-small-spacing: 4px;
+  --spacing-small-spacing: 8px;
+  --spacing-medium-spacing: 12px;
+  --spacing-base-spacing: 16px;
+  --spacing-large-spacing: 24px;
+  --spacing-extra-large-spacing: 32px;
+  --spacing-very-large-spacing: 48px;
+  --typography-display-large-fontsize: 64px;
+  --typography-display-large-lineheight: 70px;
+  --typography-display-medium-fontsize: 50px;
+  --typography-display-medium-lineheight: 55px;
+  --typography-display-small-fontsize: 40px;
+  --typography-display-small-lineheight: 44px;
+  --typography-headline-large-fontsize: 32px;
+  --typography-headline-medium-fontsize: 28px;
+  --typography-headline-small-fontsize: 24px;
+  --typography-title-large-fontsize: 16px;
+  --typography-title-medium-fontsize: 16px;
+  --typography-title-small-fontsize: 14px;
+  --typography-body-large-fontsize: 14px;
+  --typography-body-small-fontsize: 12px;
+}

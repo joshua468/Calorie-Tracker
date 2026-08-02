@@ -1,0 +1,36 @@
+{
+  "name": "Tally Health",
+  "short_name": "Tally",
+  "description": "AI-powered calorie tracking for Nigerian food",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7F8FA",
+  "theme_color": "#2FAE60",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["health", "food", "fitness"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+  // TODO: replace icon-192.png, icon-512.png, icon-maskable-512.png with final app icons
+}

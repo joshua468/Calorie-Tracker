@@ -1,0 +1,7 @@
+[functions]
+enabled = true
+
+[functions.send-email]
+enabled = true
+verify_jwt = false
+import_map = "../../import_map.json"

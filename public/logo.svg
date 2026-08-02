@@ -1,0 +1,9 @@
+<svg viewBox="10 20 160 120" xmlns="http://www.w3.org/2000/svg" width="160" height="120">
+  <defs>
+    <style>
+      .word { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; }
+    </style>
+  </defs>
+  <text x="10" y="72" class="word" font-size="58" font-weight="700" fill="#1F1F1F" letter-spacing="-1.5">Tally</text>
+  <text x="11" y="102" class="word" font-size="19" font-weight="600" fill="#2FAE60" letter-spacing="14">HEALTH</text>
+</svg>
