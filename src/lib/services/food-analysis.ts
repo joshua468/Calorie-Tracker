@@ -2,8 +2,8 @@ import type { DetectedFood } from '@/lib/types'
 
 async function compressImage(
   dataUrl: string,
-  maxDim = 1024,
-  quality = 0.8,
+  maxDim = 640,
+  quality = 0.7,
 ): Promise<string> {
   try {
     const img = new Image()

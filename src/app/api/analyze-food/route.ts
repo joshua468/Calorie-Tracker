@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
             contents: [{
               parts: [
                 {
-                  text: 'You are a professional nutritionist AI. Analyze the food in this image and return accurate nutritional data. For each food item detected, provide: name (specific dish/food name), confidence (0-100, how sure you are), calories (kcal per serving), protein (grams), carbs (grams), fat (grams), fiber (grams), sugar (grams), sodium (mg), servingSize (descriptive like "1 cup" or "6 oz"), servingWeight (grams). Be precise with calorie and macro estimates. Only return valid JSON array — no markdown, no explanation. Example format: [{"name":"Grilled Chicken Breast","confidence":95,"calories":284,"protein":53,"carbs":0,"fat":6,"fiber":0,"sugar":0,"sodium":130,"servingSize":"6 oz","servingWeight":170}]',
+                  text: 'You are a professional nutritionist AI. Analyze the food in this image. Return ONLY a valid JSON array of detected foods, no markdown or explanation. Each item: name (specific dish), confidence (0-100), calories (kcal/serving), protein (g), carbs (g), fat (g), fiber (g), sugar (g), sodium (mg), servingSize (e.g. "1 cup"), servingWeight (g).',
                 },
                 { inline_data: { mime_type: mimeType, data } },
               ],
