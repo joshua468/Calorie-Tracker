@@ -8,3 +8,5 @@ npm-install.log
 vite-server.log
 .DS_Store
 *.log
+
+.vercel
