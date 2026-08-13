@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F7F8FA",
-  "theme_color": "#2FAE60",
+  "theme_color": "#F7F8FA",
   "orientation": "portrait",
   "scope": "/",
   "categories": ["health", "food", "fitness"],
