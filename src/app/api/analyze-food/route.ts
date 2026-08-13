@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export const maxDuration = 60
-
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || ''
 
 function extractBase64(dataUrl: string): { mimeType: string; data: string } {
@@ -39,7 +37,7 @@ export async function POST(request: NextRequest) {
         },
       ),
       new Promise<Response>((_, reject) =>
-        setTimeout(() => reject(new Error('Gemini request timed out')), 25000)
+        setTimeout(() => reject(new Error('Gemini request timed out')), 30000)
       ),
     ])
 
