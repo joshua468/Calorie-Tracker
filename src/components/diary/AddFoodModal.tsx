@@ -551,15 +551,8 @@ function PhotoTab({
     if (!file) return
     setPhase('analyzing')
     try {
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
-
       const { analyzeFoodImage } = await import('@/lib/services/food-analysis')
-      const foods = await analyzeFoodImage(dataUrl)
+      const foods = await analyzeFoodImage(file)
 
       if (!foods || foods.length === 0) {
         setErrorMsg('Could not identify any food in the image. Try again with a clearer photo.')

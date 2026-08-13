@@ -1,70 +1,96 @@
 import type { DetectedFood } from '@/lib/types'
 
-async function compressImage(
-  dataUrl: string,
+type ImageSource = File | Blob | string
+
+async function compressToJpegBlob(
+  source: ImageSource,
   maxDim = 640,
   quality = 0.7,
-): Promise<string> {
-  const base64ToBlob = (url: string): Blob => {
-    const [head, b64] = url.split(',')
-    const mime = head.match(/data:([^;]+)/)?.[1] || 'image/jpeg'
-    const bin = atob(b64)
-    const bytes = new Uint8Array(bin.length)
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
-    return new Blob([bytes], { type: mime })
-  }
-
-  const drawToCanvas = (source: CanvasImageSource, width: number, height: number) => {
-    const canvas = document.createElement('canvas')
-    const scale = Math.min(1, maxDim / Math.max(width, height))
-    canvas.width = Math.max(1, Math.round(width * scale))
-    canvas.height = Math.max(1, Math.round(height * scale))
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return null
-    ctx.drawImage(source, 0, 0, canvas.width, canvas.height)
-    return canvas.toDataURL('image/jpeg', quality)
-  }
+): Promise<Blob> {
+  let objectUrl: string | null = null
+  let bitmap: ImageBitmap | null = null
 
   try {
-    const blob = base64ToBlob(dataUrl)
-    const bitmap = await createImageBitmap(blob, { imageOrientation: 'from-image' })
-    const result = drawToCanvas(bitmap, bitmap.width, bitmap.height)
-    bitmap.close()
-    if (result) return result
-  } catch {
-    /* fall through to legacy path */
-  }
+    if (source instanceof Blob) {
+      objectUrl = URL.createObjectURL(source)
+    }
 
-  try {
-    const img = new Image()
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve()
-      img.onerror = () => reject(new Error('decode failed'))
-      img.src = dataUrl
-    })
-    const scale = Math.min(1, maxDim / Math.max(img.width, img.height))
-    if (scale >= 1) return dataUrl
+    const decodeViaImg = async (url: string): Promise<HTMLImageElement> => {
+      const el = new Image()
+      await new Promise<void>((resolve, reject) => {
+        el.onload = () => resolve()
+        el.onerror = () => reject(new Error('Unable to read this photo'))
+        el.src = url
+      })
+      return el
+    }
 
-    const canvas = document.createElement('canvas')
-    canvas.width = Math.round(img.width * scale)
-    canvas.height = Math.round(img.height * scale)
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return dataUrl
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-    return canvas.toDataURL('image/jpeg', quality)
-  } catch {
-    return dataUrl
+    const drawAndCompress = async (
+      element: CanvasImageSource,
+      width: number,
+      height: number,
+    ): Promise<Blob> => {
+      const canvas = document.createElement('canvas')
+      const scale = Math.min(1, maxDim / Math.max(width, height))
+      canvas.width = Math.max(1, Math.round(width * scale))
+      canvas.height = Math.max(1, Math.round(height * scale))
+      const ctx = canvas.getContext('2d')
+      if (!ctx) throw new Error('Unable to read this photo')
+      ctx.drawImage(element, 0, 0, canvas.width, canvas.height)
+      return await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Unable to compress photo'))), 'image/jpeg', quality)
+      })
+    }
+
+    if (source instanceof Blob) {
+      try {
+        bitmap = await createImageBitmap(source, { imageOrientation: 'from-image' })
+        return await drawAndCompress(bitmap, bitmap.width, bitmap.height)
+      } catch {
+        const el = await decodeViaImg(objectUrl as string)
+        return await drawAndCompress(el, el.width, el.height)
+      }
+    }
+
+    const el = await decodeViaImg(source)
+    const scale = Math.min(1, maxDim / Math.max(el.width, el.height))
+    if (scale >= 1) return blobFromDataUrl(source)
+    return await drawAndCompress(el, el.width, el.height)
+  } finally {
+    if (objectUrl) URL.revokeObjectURL(objectUrl)
+    if (bitmap) bitmap.close()
   }
 }
 
-export async function analyzeFoodImage(imageUri: string): Promise<DetectedFood[]> {
-  if (typeof imageUri !== 'string' || !imageUri) {
-    throw new Error('Invalid image data')
+function blobFromDataUrl(dataUrl: string): Blob {
+  const [head, b64] = dataUrl.split(',')
+  const mime = head.match(/data:([^;]+)/)?.[1] || 'image/jpeg'
+  const bin = atob(b64)
+  const bytes = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
+  return new Blob([bytes], { type: mime })
+}
+
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(new Error('Failed to encode photo'))
+    reader.readAsDataURL(blob)
+  })
+}
+
+export async function analyzeFoodImage(source: ImageSource): Promise<DetectedFood[]> {
+  if (!source) {
+    throw new Error('Invalid image')
   }
-  const compressed = await compressImage(imageUri)
+
+  const blob = await compressToJpegBlob(source)
+  const compressed = await blobToDataUrl(blob)
   if (compressed.length > 4_500_000) {
     throw new Error('Image is too large to analyze. Please try a closer or smaller photo.')
   }
+
   const body = JSON.stringify({ image: compressed })
   const response = await fetch('/api/analyze-food', {
     method: 'POST',

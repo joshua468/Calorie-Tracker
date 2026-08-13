@@ -48,22 +48,8 @@ export function PhotoModal({ isOpen, onClose, defaultMeal }: PhotoModalProps) {
     setPhase('analyzing')
     setError(null)
 
-    const dataUrl = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = (ev) => {
-        const result = ev.target?.result
-        if (typeof result === 'string') {
-          resolve(result)
-        } else {
-          reject(new Error('Failed to read file: unexpected result type'))
-        }
-      }
-      reader.onerror = () => reject(new Error('Failed to read file'))
-      reader.readAsDataURL(file)
-    })
-
     try {
-      const detectedFoods = await analyzeFoodImage(dataUrl)
+      const detectedFoods = await analyzeFoodImage(file)
       if (detectedFoods.length === 0) throw new Error('No food detected in this image')
 
       let totalKcal = 0
