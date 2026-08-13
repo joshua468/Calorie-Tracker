@@ -586,8 +586,8 @@ function PhotoTab({
       setLogResult({ totalCal, meal: mealLabel, count: foods.length })
       useToastStore.getState().addToast(`Logged ${foods.length} item${foods.length > 1 ? 's' : ''} — ${totalCal} kcal`)
       setPhase('done')
-    } catch {
-      setErrorMsg('Analysis failed. Please try again.')
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Analysis failed. Please try again.')
       setPhase('error')
     }
   }
